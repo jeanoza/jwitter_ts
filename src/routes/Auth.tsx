@@ -1,38 +1,47 @@
-import React, { useState, FormEvent, MouseEvent } from "react";
+import React, { FormEvent } from "react";
 import { authService, firebaseInstance } from "fbase";
+import AuthForm from "components/AuthForm";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+const Logo = styled.div`
+  color: #289ae2;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+  font-size: 30px;
+`;
+const Buttons = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+`;
+const Button = styled.button`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 75%;
+  padding: 5px 0px;
+  border-radius: 20px;
+  color: rgb(20, 20, 20);
+  background: rgb(220, 220, 220);
+  margin-bottom: 15px;
+`;
 const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [newAccount, setNewAccount] = useState(true);
-  const [error, setError] = useState("");
-  const onChange = (event: FormEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { name, value },
-    } = event;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
-  };
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      let data;
-      if (newAccount) {
-        data = await authService.createUserWithEmailAndPassword(
-          email,
-          password
-        );
-      } else {
-        data = await authService.signInWithEmailAndPassword(email, password);
-      }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-  const onSocialClick = async (event: MouseEvent<HTMLButtonElement>) => {
+  const onSocialClick = async (event: FormEvent<HTMLButtonElement>) => {
     const {
       currentTarget: { name },
     } = event;
@@ -44,43 +53,23 @@ const Auth = () => {
     }
     provider && (await authService.signInWithPopup(provider));
   };
-  const toggleAccount = () => setNewAccount((prev) => !prev);
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input
-          name="email"
-          type="text"
-          onChange={onChange}
-          value={email}
-          required
-          placeholder="Email"
-        />
-        <input
-          name="password"
-          type="password"
-          onChange={onChange}
-          value={password}
-          placeholder="Password"
-        />
-        <input
-          type="submit"
-          value={newAccount ? "Create Account" : "Sign In"}
-        />
-        {error}
-      </form>
-      <span onClick={toggleAccount}>
-        {newAccount ? "Sign In" : "Create Account"}
-      </span>
-      <div>
-        <button name="google" onClick={onSocialClick}>
+    <Container>
+      <Logo>
+        <FontAwesomeIcon icon={faTwitter} size="4x" />
+      </Logo>
+      <AuthForm />
+      <Buttons>
+        <Button onClick={onSocialClick} name="google">
           Continue with Google
-        </button>
-        <button name="github" onClick={onSocialClick}>
+          <FontAwesomeIcon icon={faGoogle} size="2x" />
+        </Button>
+        <Button onClick={onSocialClick} name="github">
           Continue with Github
-        </button>
-      </div>
-    </div>
+          <FontAwesomeIcon icon={faGithub} size="2x" />
+        </Button>
+      </Buttons>
+    </Container>
   );
 };
 

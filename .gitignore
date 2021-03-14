@@ -25,4 +25,5 @@ yarn-error.log*
 #typescript practice
 /practice_ts
 
+#firebase
 .env
